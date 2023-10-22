@@ -1,0 +1,12 @@
+{% include 'blades/head.html' %}
+<h1>Bem-vindo ao nosso sistema de cadastro de pacientes!</h1>
+<p>Escolha uma das seguintes opções:</p>
+<ul>
+    <li>
+        <a href="{{ url_for('patient') }}">Cadastrar novo paciente</a>
+    </li>
+    <li>
+        <a href="{{ url_for('patients') }}">Vizualizar pacientes cadastrados</a>
+    </li>
+</ul>
+{% include 'blades/foot.html' %}

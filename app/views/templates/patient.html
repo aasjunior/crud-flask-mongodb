@@ -1,0 +1,9 @@
+{% include 'blades/head.html' %}
+<form method="POST" enctype="multipart/form-data">
+    <label for="patient_name">Nome:</label><br>
+    <input type="text" id="patient_name" name="name"><br>
+    <label for="patient_image">Imagem:</label><br>
+    <input type="file" id="patient_image" name="image"><br>
+    <input type="submit" value="Enviar">    
+</form>
+{% include 'blades/foot.html' %}

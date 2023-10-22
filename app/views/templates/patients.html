@@ -1,0 +1,22 @@
+{% include 'blades/head.html' %}
+<table>
+    <thead>
+        <tr>
+            <th>Imagem</th>
+            <th>Nome</th>
+            <th>Data de Cadastro</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for patient in patients %}
+            <tr>
+                <td>
+                    <img src="{{ url_for('image', id=patient._id) }}" alt="Imagem do paciente" width="100">
+                </td>
+                <td>{{ patient.name }}</td>
+                <td>{{ patient.createdAt | dateFormat }}
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% include 'blades/foot.html' %}
