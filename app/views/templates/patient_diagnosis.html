@@ -32,13 +32,18 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Adicione um evento de clique delegado para o elemento #medicamentos
+    $('#medicamentos').on('click', '.remover', function() {
+        $(this).closest('.medicamento').remove();
+        // Atualize os dados da sessão ao remover um campo
+        updateSessionData();
+        console.log('click')
+    });
+
     $('#adicionar').click(function() {
         var medicamento = $('.medicamento:last').clone();
         medicamento.find('input').val('');
         medicamento.appendTo('#medicamentos');
-        medicamento.find('.remover').click(function() {
-            $(this).closest('.medicamento').remove();
-        });
         
         // Atualize os dados da sessão ao adicionar um novo campo
         updateSessionData();
