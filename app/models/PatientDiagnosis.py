@@ -13,8 +13,11 @@ class PatientDiagnosis(DBConnect):
         data_copy.pop('medicamentos', None)
         data_copy.pop('medicamentos[][nome]', None)
         data_copy.pop('medicamentos[][quantidade]', None)
+
+        # Verifique se pelo menos um campo de medicamento não está vazio
+        if any(item['nome'] for item in medicamentos_dict):
+            data_copy['medicamentos'] = medicamentos_dict
         
-        data_copy['medicamentos'] = medicamentos_dict
         data_copy['patient_id'] = ObjectId(str(patient_id))
 
         return self.collection.insert_one(data_copy)
