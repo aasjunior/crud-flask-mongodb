@@ -52,7 +52,12 @@ def init_app(app):
                 # Obtenha os dados atuais do paciente_diagnosis da sessão
                 patient_diagnosis = session.get('patient_diagnosis', {})
                 # Atualize os dados atuais com os novos dados do formulário
-                patient_diagnosis.update(request.form.to_dict())
+                medicamento = request.form.get('medicamento')
+                quantidade = request.form.get('quantidade')
+                if medicamento and quantidade:
+                    medicamentos = patient_diagnosis.get('medicamentos', [])
+                    medicamentos.append({'nome': medicamento, 'quantidade': quantidade})
+                    patient_diagnosis['medicamentos'] = medicamentos
                 # Salve os dados atualizados na sessão
                 session['patient_diagnosis'] = patient_diagnosis
                 # Salve os dados no banco de dados
@@ -60,7 +65,7 @@ def init_app(app):
                 session.clear()
                 clear_tmp()
                 return redirect(url_for('patients'))
-        
+
         # Recupere os dados atuais do paciente_diagnosis da sessão
         patient_diagnosis = session.get('patient_diagnosis', {})
         medicamentos = patient_diagnosis.get('medicamentos', [])
@@ -75,7 +80,6 @@ def init_app(app):
             patient_diagnosis=patient_diagnosis, 
             medicamentos_quantidades=medicamentos_quantidades
         )
-
     
     @app.route('/save-patient-diagnosis', methods=['POST'])
     def save_patient_diagnosis():
