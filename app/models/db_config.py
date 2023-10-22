@@ -1,6 +1,5 @@
+from pymongo import MongoClient, errors
 from dotenv import load_dotenv
-from werkzeug.utils import secure_filename
-from PIL import Image
 import os
 
 class DBConfig:
@@ -25,16 +24,17 @@ class DBConfig:
         password = os.getenv('MONGODB_PASSWORD')
 
         return host, port, db_name, username, password
-    
-class ImageProcessor:
-    @staticmethod
-    def save_as_png(image):
-        filename = secure_filename(image.filename)
-        temp_image_path = os.path.join('views', 'static', 'tmp', 'imgs', filename)
-        image.save(temp_image_path)
 
-        img = Image.open(temp_image_path)
-        png_image_path = temp_image_path.rsplit('.', 1)[0] + '.png'
-        img.save(png_image_path, 'PNG')
+class DBConnect:
+    def __init__(self, collection_name):
+        host, port, db_name, username, password = DBConfig.get_db_config()
+        #self.client = MongoClient(f'mongodb://{username}@{host}:{port}/{db_name}?authMechanism=SCRAM-SHA-1', serverSelectionTimeoutMS = 5000)
+        self.client = MongoClient(f'mongodb://localhost:27017', serverSelectionTimeoutMS = 5000)
 
-        return png_image_path
+        try:
+            self.client.server_info()
+        except errors.ServerSelectionTimeoutError as err:
+            raise Exception("Não foi possível estabelecer conexão com o MongoDB: ", err)
+        
+        self.db = self.client[db_name]
+        self.collection = self.db[collection_name]

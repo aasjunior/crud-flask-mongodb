@@ -1,5 +1,5 @@
 {% include 'blades/head.html' %}
-<form method="POST" enctype="multipart/form-data">
+<form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
     <label for="data-admissao">Admissão</label>
     <input type="date" id="data-admissao" name="data-admissao" >
     <div id="medicamentos">
@@ -27,5 +27,22 @@ $(document).ready(function() {
         $(this).closest('.medicamento').remove();
     });
 });
+
+function validateForm() {
+    var quantidades = document.getElementsByName('quantidade[]');
+    for (var i = 0; i < quantidades.length; i++) {
+        var quantidade = quantidades[i].value;
+        if (isNaN(quantidade)) {
+            alert('Por favor, insira um número válido para a quantidade.');
+            return false;
+        }
+        if (quantidade <= 0) {
+            alert('A quantidade não pode ser um número menor ou igual a 0.');
+            return false;
+        }
+    }
+    return true;
+}
+
 </script>
 {% include 'blades/foot.html' %}
