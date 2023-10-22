@@ -1,0 +1,31 @@
+{% include 'blades/head.html' %}
+<form method="POST" enctype="multipart/form-data">
+    <label for="data-admissao">Admissão</label>
+    <input type="date" id="data-admissao" name="data-admissao" >
+    <div id="medicamentos">
+        <div class="medicamento">
+            <label for="medicamento">Medicamento</label>
+            <input type="text" name="medicamentos[]">
+            <label for="quantidade">Quantidade</label>
+            <input type="number" name="quantidade[]">
+            <button type="button" class="remover">Remover</button>
+        </div>
+    </div>
+    <button type="button" id="adicionar">Adicionar medicamento</button>
+    <input type="submit" value="Enviar">  
+</form>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $('#adicionar').click(function() {
+        var medicamento = $('.medicamento:first').clone();
+        medicamento.find('input').val('');
+        medicamento.appendTo('#medicamentos');
+    });
+
+    $(document).on('click', '.remover', function() {
+        $(this).closest('.medicamento').remove();
+    });
+});
+</script>
+{% include 'blades/foot.html' %}
