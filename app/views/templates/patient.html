@@ -1,9 +1,25 @@
 {% include 'blades/head.html' %}
 <form method="POST" enctype="multipart/form-data">
     <label for="patient_name">Nome:</label><br>
-    <input type="text" id="patient_name" name="name"><br>
+    <input type="text" id="patient_name" name="name" value="{{ patient_data.get('name', '') }}"><br>
     <label for="patient_image">Imagem:</label><br>
-    <input type="file" id="patient_image" name="image"><br>
-    <input type="submit" value="Enviar">    
+    <input type="file" id="patient_image" name="image" onchange="previewImage(event)" required><br>
+    {% if patient_image_name %}
+    <img id="image_preview" src="{{ url_for('static', filename='tmp/imgs/' + patient_image_name) }}" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
+    {% else %}
+    <img id="image_preview" src="" alt="Image Preview" style="max-width: 200px; max-height: 200px;">
+    {% endif %}
+<br>
+    <input type="submit" value="Próximo">    
 </form>
+<script>
+function previewImage(event) {
+    var reader = new FileReader();
+    reader.onload = function() {
+        var output = document.getElementById('image_preview');
+        output.src = reader.result;
+    };
+    reader.readAsDataURL(event.target.files[0]);
+}
+</script>
 {% include 'blades/foot.html' %}

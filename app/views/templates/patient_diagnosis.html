@@ -1,48 +1,80 @@
 {% include 'blades/head.html' %}
 <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
     <label for="data-admissao">Admissão</label>
-    <input type="date" id="data-admissao" name="data-admissao" >
+    <input type="date" id="data-admissao" name="data-admissao" value="{{ patient_diagnosis.get('data-admissao', '') }}">
+    <!-- Atualize o formulário HTML para enviar os dados no formato esperado -->
     <div id="medicamentos">
-        <div class="medicamento">
-            <label for="medicamento">Medicamento</label>
-            <input type="text" name="medicamentos[]">
-            <label for="quantidade">Quantidade</label>
-            <input type="number" name="quantidade[]">
-            <button type="button" class="remover">Remover</button>
-        </div>
+        {% if medicamentos_quantidades %}
+            {% for item in medicamentos_quantidades %}
+            <div class="medicamento">
+                <label for="medicamento">Medicamento</label>
+                <input type="text" name="medicamentos[][nome]" value="{{ item.medicamento }}">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" name="medicamentos[][quantidade]" value="{{ item.quantidade }}">
+                <button type="button" class="remover">Remover</button>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="medicamento">
+                <label for="medicamento">Medicamento</label>
+                <input type="text" name="medicamentos[][nome]">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" name="medicamentos[][quantidade]">
+                <button type="button" class="remover">Remover</button>
+            </div>
+        {% endif %}
     </div>
+
     <button type="button" id="adicionar">Adicionar medicamento</button>
-    <input type="submit" value="Enviar">  
+    <button type="button" id="voltar">Voltar</button>
+    <input type="submit" value="Enviar">
 </form>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
     $('#adicionar').click(function() {
-        var medicamento = $('.medicamento:first').clone();
+        var medicamento = $('.medicamento:last').clone();
         medicamento.find('input').val('');
         medicamento.appendTo('#medicamentos');
+        medicamento.find('.remover').click(function() {
+            $(this).closest('.medicamento').remove();
+        });
+        
+        // Atualize os dados da sessão ao adicionar um novo campo
+        updateSessionData();
     });
+    
+    // Função para atualizar os dados na sessão
+    function updateSessionData() {
+        var medicamentos = [];
+        $('.medicamento').each(function() {
+            medicamentos.push({
+                'nome': $(this).find('input[name="medicamentos[][nome]"]').val(),
+                'quantidade': $(this).find('input[name="medicamentos[][quantidade]"]').val()
+            });
+        });
+        sessionData = { 'medicamentos': medicamentos };
+        // Atualize os dados na sessão
+        $.ajax({
+            url: '/save-patient-diagnosis',
+            type: 'post',
+            data: JSON.stringify(sessionData),
+            contentType: 'application/json',
+            success: function() {
+                // Dados atualizados na sessão
+            }
+        });
+    }
+    
+    // ...
 
-    $(document).on('click', '.remover', function() {
-        $(this).closest('.medicamento').remove();
+    // Atualize os dados da sessão ao clicar em "Voltar"
+    $('#voltar').click(function(e) {
+        e.preventDefault();
+        updateSessionData();
+        window.location.href = '/patient';
     });
 });
-
-function validateForm() {
-    var quantidades = document.getElementsByName('quantidade[]');
-    for (var i = 0; i < quantidades.length; i++) {
-        var quantidade = quantidades[i].value;
-        if (isNaN(quantidade)) {
-            alert('Por favor, insira um número válido para a quantidade.');
-            return false;
-        }
-        if (quantidade <= 0) {
-            alert('A quantidade não pode ser um número menor ou igual a 0.');
-            return false;
-        }
-    }
-    return true;
-}
 
 </script>
 {% include 'blades/foot.html' %}
